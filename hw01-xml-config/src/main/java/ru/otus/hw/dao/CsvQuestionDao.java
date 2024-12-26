@@ -22,14 +22,10 @@ public class CsvQuestionDao implements QuestionDao {
 
     @Override
     public List<Question> findAll() {
-        // Использовать CsvToBean
-        // https://opencsv.sourceforge.net/#collection_based_bean_fields_one_to_many_mappings
-        // Использовать QuestionReadException
-        // Про ресурсы: https://mkyong.com/java/java-read-a-file-from-resources-folder/
         try (InputStream file = getInputStream()) {
             return readQuestionsFromCsv(file);
         } catch (IOException e) {
-            throw new QuestionReadException("Resourse file reading error", e);
+            throw new QuestionReadException("Resource file reading error", e);
         }
     }
 
@@ -38,7 +34,7 @@ public class CsvQuestionDao implements QuestionDao {
              BufferedReader bufferedReader = new BufferedReader(streamReader)) {
             List<QuestionDto> questionList = buildCsvToBean(bufferedReader).parse();
             if (questionList.isEmpty()) {
-                throw new QuestionReadException("Resourse file is empty error");
+                throw new QuestionReadException("Resource file is empty error");
             }
             return questionList.stream()
                     .map(QuestionDto::toDomainObject)
