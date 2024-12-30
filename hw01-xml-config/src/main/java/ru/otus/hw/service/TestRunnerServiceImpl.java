@@ -7,6 +7,7 @@ import ru.otus.hw.exceptions.QuestionReadException;
 public class TestRunnerServiceImpl implements TestRunnerService {
 
     private final IOService ioService;
+
     private final TestService testService;
 
     @Override
@@ -14,7 +15,8 @@ public class TestRunnerServiceImpl implements TestRunnerService {
         try {
             testService.executeTest();
         } catch (QuestionReadException e) {
-            ioService.printFormattedLine("Error while generating list of questions. Check if file with questions is present and correct in application resources");
+            ioService.printFormattedLine("Error while generating list of questions. " +
+                    "Check if file with questions is present and correct in application resources");
         } catch (Exception e) {
             ioService.printFormattedLine("An unexpected application error occurred. Please contact technical support.");
         }
