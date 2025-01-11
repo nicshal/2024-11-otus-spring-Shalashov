@@ -20,7 +20,7 @@ import static org.mockito.MockitoAnnotations.openMocks;
 public class TestServiceImplTest {
 
     @Mock
-    private IOService ioService;
+    private LocalizedIOService ioService;
 
     @Mock
     private QuestionDao csvQuestionDao;
@@ -55,20 +55,18 @@ public class TestServiceImplTest {
     }
 
     @Test
-    @DisplayName("Проверяем печать вопросов")
+    @DisplayName("Проверяем баланс вопросов/правильных ответов")
     public void testExecuteTest() {
         Student student = new Student("FIRST_NAME", "LAST_NAME");
         when(csvQuestionDao.findAll()).thenReturn(questionList);
-        when(ioService.readIntForRangeWithPrompt(anyInt(), anyInt(), anyString(), anyString())).thenReturn(1, 1, 1);
+        when(ioService.readIntForRangeWithPromptLocalized(anyInt(), anyInt(), anyString(), anyString())).thenReturn(1, 1, 1);
 
         TestResult result = testService.executeTestFor(student);
 
-        verify(ioService, times(5)).printLine("");
-        verify(ioService).printFormattedLine("Please answer the questions below%n");
-        verify(ioService).printFormattedLine("Question: Question 1");
-        verify(ioService).printFormattedLine("Question: Question 2");
-        verify(ioService).printFormattedLine("Question: Question 3");
+        verify(ioService, times(1)).printLineLocalized("TestService.answer.the.questions");
+        verify(ioService, times(3)).readIntForRangeWithPromptLocalized(anyInt(), anyInt(), anyString(), anyString());
 
+        assertThat(result.getAnsweredQuestions().size()).isEqualTo(3);
         assertThat(result.getRightAnswersCount()).isEqualTo(1);
     }
 
