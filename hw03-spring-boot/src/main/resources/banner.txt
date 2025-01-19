@@ -1,0 +1,9 @@
+${AnsiColor.DEFAULT}
+${AnsiColor.RED}  #####
+${AnsiColor.BLUE} #     # #    #   ##   #        ##    ####  #    #  ####  #    #
+${AnsiColor.RED} #       #    #  #  #  #       #  #  #      #    # #    # #    #
+${AnsiColor.BLUE}  #####  ###### #    # #      #    #  ####  ###### #    # #    #
+${AnsiColor.RED}       # #    # ###### #      ######      # #    # #    # #    #
+${AnsiColor.BLUE} #     # #    # #    # #      #    # #    # #    # #    #  #  #
+${AnsiColor.RED}  #####  #    # #    # ###### #    #  ####  #    #  ####    ##
+${AnsiColor.DEFAULT}
