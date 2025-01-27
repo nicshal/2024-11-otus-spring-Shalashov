@@ -1,0 +1,9 @@
+# Добавить сюда своих вопросов. Эту строку надо пропустить при настройке CsvToBean (withSkipLines)
+Есть ли жизнь на Марсе?;Это науке пока не известно%true|Конечно. Красные (НЛО) это с Марса. А зеленые (НЛО) с Венеры%false|Точно нет%false
+Как нужно загружать ресурс из jar в Java?;ClassLoader#geResourceAsStream или ClassPathResource#getInputStream%true|ClassLoader#geResource#getFile + FileReader%false|Wingardium Leviosa%false
+Какой предпочтительный способ реакции на исключения?;@SneakyThrow%false|e.printStackTrace()%false|Проброс дальше с предварительным оборачиванием в бизнес-исключение (например, QuestionReadException)%true|Игнорирование исключения%false
+Каково было первоначальное название Java?;Oak%true|Pine%false|Maple%false
+Кто разработал язык программирования Java?;Microsoft%false|Oracle%false|Sun Microsystems%true|Google%false
+В каком году была выпущена первая версия Java;1991%false|1995%true|1998%false|2000%false
+Что включает в себя JDK?;Только компилятор%false|Только среда выполнения%false|И компилятор, и среда выполнения%true|Ничего из вышеперечисленного%false
+Можете ли вы запустить программу Java без JRE?;Yes%false|No%true
