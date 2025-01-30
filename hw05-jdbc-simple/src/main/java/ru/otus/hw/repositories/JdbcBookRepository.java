@@ -33,8 +33,8 @@ public class JdbcBookRepository implements BookRepository {
                                g.id AS genre_id, 
                                g.name AS genre_name 
                         FROM books b
-                        INNER JOIN authors a ON a.id = b.author_id 
-                        INNER JOIN genres g ON g.id = b.genre_id
+                        LEFT JOIN authors a ON a.id = b.author_id 
+                        LEFT JOIN genres g ON g.id = b.genre_id
                         WHERE b.id = :id
                         """,
                 Map.of("id", id),
@@ -52,8 +52,8 @@ public class JdbcBookRepository implements BookRepository {
                                g.id AS genre_id, 
                                g.name AS genre_name
                         FROM books b
-                        INNER JOIN authors a ON a.id = b.author_id 
-                        INNER JOIN genres g ON g.id = b.genre_id
+                        LEFT JOIN authors a ON a.id = b.author_id 
+                        LEFT JOIN genres g ON g.id = b.genre_id
                         """,
                 new BookRowMapper()
         );
@@ -97,14 +97,12 @@ public class JdbcBookRepository implements BookRepository {
     private Book update(Book book) {
         int result = namedParameterJdbc.update("""
                         UPDATE books 
-                        SET id = :id, 
-                            title = :title, 
+                        SET title = :title, 
                             author_id = :author_id, 
                             genre_id = :genre_id 
                         WHERE id = :id
                         """,
-                Map.of("id", book.getId(),
-                        "title", book.getTitle(),
+                Map.of("title", book.getTitle(),
                         "author_id", book.getAuthor().getId(),
                         "genre_id", book.getGenre().getId())
         );
