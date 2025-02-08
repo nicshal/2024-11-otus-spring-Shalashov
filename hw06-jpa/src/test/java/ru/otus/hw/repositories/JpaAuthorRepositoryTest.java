@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Author;
 
@@ -23,6 +24,9 @@ public class JpaAuthorRepositoryTest {
 
     @Autowired
     private JpaAuthorRepository jpaAuthorRepository;
+
+    @Autowired
+    private TestEntityManager entityManager;
 
     private List<Author> authors;
 
@@ -44,9 +48,11 @@ public class JpaAuthorRepositoryTest {
     @DisplayName("Должен загружать автора по id")
     @ParameterizedTest
     @MethodSource("getDbAuthors")
-    void shouldReturnCorrectAuthorById(Author expectedAuthor) {
-        Optional<Author> actualAuthor = jpaAuthorRepository.findById(expectedAuthor.getId());
-        assertThat(actualAuthor).isPresent()
+    void shouldReturnCorrectAuthorById(Author testAuthor) {
+        Optional<Author> actualAuthor = jpaAuthorRepository.findById(testAuthor.getId());
+        var expectedAuthor = entityManager.find(Author.class, testAuthor.getId());
+        assertThat(actualAuthor)
+                .isPresent()
                 .get()
                 .isEqualTo(expectedAuthor);
     }

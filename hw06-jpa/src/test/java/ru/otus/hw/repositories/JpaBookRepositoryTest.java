@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
@@ -35,6 +36,9 @@ class JpaBookRepositoryTest {
     @Autowired
     private JpaGenreRepository jpaGenreRepository;
 
+    @Autowired
+    private TestEntityManager entityManager;
+
     private List<Author> dbAuthors;
 
     private List<Genre> dbGenres;
@@ -51,8 +55,9 @@ class JpaBookRepositoryTest {
     @DisplayName("Должен загружать книгу по id")
     @ParameterizedTest
     @MethodSource("getDbBooks")
-    void shouldReturnCorrectBookById(Book expectedBook) {
-        var actualBook = jpaBookRepository.findById(expectedBook.getId());
+    void shouldReturnCorrectBookById(Book testBook) {
+        var actualBook = jpaBookRepository.findById(testBook.getId());
+        var expectedBook = entityManager.find(Book.class, testBook.getId());
         assertThat(actualBook).isPresent()
                 .get()
                 .isEqualTo(expectedBook);
@@ -110,7 +115,7 @@ class JpaBookRepositoryTest {
                 .isEqualTo(returnedBook);
     }
 
-    @DisplayName("Должен удалять книгу по id ")
+    @DisplayName("Должен удалять книгу по id")
     @Test
     void shouldDeleteBook() {
         assertThat(jpaBookRepository.findById(TEST_BOOK_ID)).isPresent();

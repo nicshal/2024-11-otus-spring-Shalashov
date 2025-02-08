@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
@@ -33,6 +34,9 @@ public class JpaCommentRepositoryTest {
     @Autowired
     private JpaBookRepository jpaBookRepository;
 
+    @Autowired
+    private TestEntityManager entityManager;
+
     private List<Comment> dbComments;
 
     private List<Author> dbAuthors;
@@ -52,8 +56,9 @@ public class JpaCommentRepositoryTest {
     @DisplayName("Должен загружать комментарий по id")
     @ParameterizedTest
     @MethodSource("getDbComments")
-    void shouldReturnCorrectCommentById(Comment expectedComment) {
-        Optional<Comment> actualComment = jpaCommentRepository.findById(expectedComment.getId());
+    void shouldReturnCorrectCommentById(Comment testComment) {
+        Optional<Comment> actualComment = jpaCommentRepository.findById(testComment.getId());
+        var expectedComment = entityManager.find(Comment.class, testComment.getId());
         assertThat(actualComment).isPresent()
                 .get()
                 .isEqualTo(expectedComment);

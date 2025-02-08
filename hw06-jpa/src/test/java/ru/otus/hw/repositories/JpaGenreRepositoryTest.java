@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Genre;
 
@@ -23,6 +24,9 @@ public class JpaGenreRepositoryTest {
 
     @Autowired
     private JpaGenreRepository jpaGenreRepository;
+
+    @Autowired
+    private TestEntityManager entityManager;
 
     private List<Genre> genres;
 
@@ -43,8 +47,9 @@ public class JpaGenreRepositoryTest {
     @DisplayName("Должен загружать жанр по id")
     @ParameterizedTest
     @MethodSource("getDbGenres")
-    void shouldReturnCorrectGenreById(Genre expectedGenre) {
-        Optional<Genre> actualGenre = jpaGenreRepository.findById(expectedGenre.getId());
+    void shouldReturnCorrectGenreById(Genre testGenre) {
+        Optional<Genre> actualGenre = jpaGenreRepository.findById(testGenre.getId());
+        var expectedGenre = entityManager.find(Genre.class, testGenre.getId());
         assertThat(actualGenre).isPresent()
                 .get()
                 .isEqualTo(expectedGenre);
