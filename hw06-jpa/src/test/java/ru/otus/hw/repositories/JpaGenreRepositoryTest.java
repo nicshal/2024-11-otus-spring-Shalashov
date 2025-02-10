@@ -3,8 +3,6 @@ package ru.otus.hw.repositories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -12,7 +10,6 @@ import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Genre;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,6 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @Import({JpaGenreRepository.class})
 public class JpaGenreRepositoryTest {
+
+    private static final long TEST_GENRE_ID = 1L;
 
     @Autowired
     private JpaGenreRepository jpaGenreRepository;
@@ -39,21 +38,21 @@ public class JpaGenreRepositoryTest {
     @Test
     void shouldReturnCorrectGenresList() {
         List<Genre> actualGenres = jpaGenreRepository.findAll();
-        List<Genre> expectedGenres = getDbGenres();
+        List<Genre> expectedGenres = genres;
         assertThat(actualGenres).containsExactlyElementsOf(expectedGenres);
         actualGenres.forEach(System.out::println);
     }
 
     @DisplayName("Должен загружать жанр по id")
-    @ParameterizedTest
-    @MethodSource("getDbGenres")
-    void shouldReturnCorrectGenreById(Genre testGenre) {
-        Optional<Genre> actualGenre = jpaGenreRepository.findById(testGenre.getId());
-        var expectedGenre = entityManager.find(Genre.class, testGenre.getId());
-        assertThat(actualGenre).isPresent()
+    @Test
+    void shouldReturnCorrectGenreById() {
+        var actualGenre = jpaGenreRepository.findById(TEST_GENRE_ID);
+        var expectedGenre = entityManager.find(Genre.class, TEST_GENRE_ID);
+        assertThat(actualGenre)
+                .isPresent()
                 .get()
+                .usingRecursiveComparison()
                 .isEqualTo(expectedGenre);
-
     }
 
     private static List<Genre> getDbGenres() {

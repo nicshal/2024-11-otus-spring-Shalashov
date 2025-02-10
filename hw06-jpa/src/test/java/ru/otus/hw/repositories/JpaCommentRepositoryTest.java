@@ -22,35 +22,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе jpa для работы с комментариями")
 @DataJpaTest
-@Import({JpaCommentRepository.class, JpaBookRepository.class})
+@Import({JpaCommentRepository.class})
 public class JpaCommentRepositoryTest {
 
-    public static final long TEST_BOOK_ID = 1L;
-    public static final long TEST_COMMENT_ID = 1L;
+    private static final long TEST_BOOK_ID = 1L;
+    private static final long TEST_COMMENT_ID = 1L;
+    private static final long TEST_NEW_COMMENT_ID = 4L;
+    private static final String TEST_NEW_COMMENT_TEXT = "Comment_10500";
 
     @Autowired
     private JpaCommentRepository jpaCommentRepository;
-
-    @Autowired
-    private JpaBookRepository jpaBookRepository;
 
     @Autowired
     private TestEntityManager entityManager;
 
     private List<Comment> dbComments;
 
-    private List<Author> dbAuthors;
-
-    private List<Genre> dbGenres;
-
-    private List<Book> dbBooks;
+    private Book expectedBook;
 
     @BeforeEach
     void setUp() {
-        dbAuthors = getDbAuthors();
-        dbGenres = getDbGenres();
-        dbBooks = getDbBooks(dbAuthors, dbGenres);
+        List<Author> dbAuthors = getDbAuthors();
+        List<Genre> dbGenres = getDbGenres();
+        List<Book> dbBooks = getDbBooks(dbAuthors, dbGenres);
         dbComments = getDbComments(dbBooks);
+        expectedBook = entityManager.find(Book.class, TEST_BOOK_ID);
     }
 
     @DisplayName("Должен загружать комментарий по id")
@@ -85,19 +81,16 @@ public class JpaCommentRepositoryTest {
     @DisplayName("Должен сохранять новый комментарий")
     @Test
     void shouldSaveNewComment() {
-        var expectedComment = new Comment(0, "Comment_10500",
-                jpaBookRepository.findById(TEST_BOOK_ID).orElseThrow());
-        var returnedComment = jpaCommentRepository.save(expectedComment);
-        assertThat(returnedComment).isNotNull()
-                .matches(book -> book.getId() > 0)
+        var expectedComment = new Comment(TEST_NEW_COMMENT_ID, TEST_NEW_COMMENT_TEXT, expectedBook);
+        var newComment = new Comment(0, TEST_NEW_COMMENT_TEXT, expectedBook);
+        jpaCommentRepository.save(newComment);
+        entityManager.flush();
+        entityManager.clear();
+        assertThat(entityManager.find(Comment.class, TEST_NEW_COMMENT_ID))
+                .isNotNull()
                 .usingRecursiveComparison()
-                .ignoringExpectedNullFields()
+                .ignoringFields("book")
                 .isEqualTo(expectedComment);
-
-        assertThat(jpaCommentRepository.findById(returnedComment.getId()))
-                .isPresent()
-                .get()
-                .isEqualTo(returnedComment);
     }
 
     private static List<Comment> getDbComments(List<Book> dbBooks) {

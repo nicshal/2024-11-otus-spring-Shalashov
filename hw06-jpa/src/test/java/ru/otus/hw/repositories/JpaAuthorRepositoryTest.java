@@ -3,8 +3,6 @@ package ru.otus.hw.repositories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -12,7 +10,6 @@ import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Author;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,6 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @Import({JpaAuthorRepository.class})
 public class JpaAuthorRepositoryTest {
+
+    private static final long TEST_AUTHOR_ID = 1L;
 
     @Autowired
     private JpaAuthorRepository jpaAuthorRepository;
@@ -46,14 +45,14 @@ public class JpaAuthorRepositoryTest {
     }
 
     @DisplayName("Должен загружать автора по id")
-    @ParameterizedTest
-    @MethodSource("getDbAuthors")
-    void shouldReturnCorrectAuthorById(Author testAuthor) {
-        Optional<Author> actualAuthor = jpaAuthorRepository.findById(testAuthor.getId());
-        var expectedAuthor = entityManager.find(Author.class, testAuthor.getId());
+    @Test
+    void shouldReturnCorrectAuthorById() {
+        var actualAuthor = jpaAuthorRepository.findById(TEST_AUTHOR_ID);
+        var expectedAuthor = entityManager.find(Author.class, TEST_AUTHOR_ID);
         assertThat(actualAuthor)
                 .isPresent()
                 .get()
+                .usingRecursiveComparison()
                 .isEqualTo(expectedAuthor);
     }
 
