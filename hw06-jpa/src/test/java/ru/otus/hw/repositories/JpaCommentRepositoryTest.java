@@ -73,9 +73,9 @@ public class JpaCommentRepositoryTest {
     @DisplayName("Должен удалять комментарий по id")
     @Test
     void shouldDeleteComment() {
-        assertThat(jpaCommentRepository.findById(TEST_COMMENT_ID)).isPresent();
+        assertThat(entityManager.find(Comment.class, TEST_COMMENT_ID)).isNotNull();
         jpaCommentRepository.deleteById(TEST_COMMENT_ID);
-        assertThat(jpaCommentRepository.findById(TEST_COMMENT_ID)).isEmpty();
+        assertThat(entityManager.find(Comment.class, TEST_COMMENT_ID)).isNull();
     }
 
     @DisplayName("Должен сохранять новый комментарий")
