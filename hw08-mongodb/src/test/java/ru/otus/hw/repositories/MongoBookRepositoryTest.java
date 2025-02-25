@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.data.mongodb.core.MongoOperations;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -32,6 +33,9 @@ class MongoBookRepositoryTest {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private MongoOperations mongoOperations;
 
     private List<Book> dbBooks;
 
@@ -71,9 +75,8 @@ class MongoBookRepositoryTest {
         var expectedBook = new Book(TEST_NEW_BOOK_ID, TEST_NEW_BOOK_TITLE,
                 expectedAuthor, expectedGenre);
         bookRepository.save(expectedBook);
-        var newBook = bookRepository.findById(TEST_NEW_BOOK_ID);
-        assertThat(newBook).isPresent()
-                .get()
+        var newBook = mongoOperations.findById(TEST_NEW_BOOK_ID, Book.class);
+        assertThat(newBook)
                 .isEqualTo(expectedBook);
     }
 
@@ -83,9 +86,8 @@ class MongoBookRepositoryTest {
         var expectedBook = dbBooks.get(1);
         expectedBook.setTitle(TEST_NEW_BOOK_TITLE);
         bookRepository.save(expectedBook);
-        var updatedBook = bookRepository.findById(UPDATE_NEW_BOOK_ID);
-        assertThat(updatedBook).isPresent()
-                .get()
+        var updatedBook = mongoOperations.findById(UPDATE_NEW_BOOK_ID, Book.class);
+        assertThat(updatedBook)
                 .isEqualTo(expectedBook);
     }
 
