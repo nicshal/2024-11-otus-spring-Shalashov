@@ -53,10 +53,9 @@ class MongoBookRepositoryTest {
     @DisplayName("Должен загружать книгу по id")
     @Test
     void shouldReturnCorrectBookById() {
-        var actualBook = bookRepository.findById(TEST_BOOK_ID);
+        var actualBook = mongoOperations.findById(TEST_BOOK_ID, Book.class);
         var expectedBook = dbBooks.get(0);
-        assertThat(actualBook).isPresent()
-                .get()
+        assertThat(actualBook)
                 .isEqualTo(expectedBook);
     }
 
@@ -94,9 +93,9 @@ class MongoBookRepositoryTest {
     @DisplayName("Должен удалять книгу по id")
     @Test
     void shouldDeleteBook() {
-        assertThat(bookRepository.findById(DELETE_TEST_BOOK_ID)).isPresent();
+        assertThat(mongoOperations.findById(DELETE_TEST_BOOK_ID, Book.class)).isNotNull();
         bookRepository.deleteById(DELETE_TEST_BOOK_ID);
-        assertThat(bookRepository.findById(DELETE_TEST_BOOK_ID)).isEmpty();
+        assertThat(mongoOperations.findById(DELETE_TEST_BOOK_ID, Book.class)).isNull();
     }
 
     private static List<Author> getDbAuthors() {

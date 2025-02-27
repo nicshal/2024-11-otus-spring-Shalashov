@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.data.mongodb.core.MongoOperations;
 import ru.otus.hw.models.Genre;
 
 import java.util.List;
@@ -20,6 +21,9 @@ public class MongoGenreRepositoryTest {
 
     @Autowired
     private GenreRepository genreRepository;
+
+    @Autowired
+    private MongoOperations mongoOperations;
 
     private List<Genre> genres;
 
@@ -40,12 +44,9 @@ public class MongoGenreRepositoryTest {
     @DisplayName("Должен загружать жанр по id")
     @Test
     void shouldReturnCorrectGenreById() {
-        var actualGenre = genreRepository.findById(TEST_GENRE_ID);
+        var actualGenre = mongoOperations.findById(TEST_GENRE_ID, Genre.class);
         var expectedGenre = genres.get(0);
         assertThat(actualGenre)
-                .isPresent()
-                .get()
-                .usingRecursiveComparison()
                 .isEqualTo(expectedGenre);
     }
 

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import ru.otus.hw.exceptions.EntityNotFoundException;
+import org.springframework.data.mongodb.core.MongoOperations;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
@@ -36,7 +36,7 @@ public class MongoCommentRepositoryTest {
     private CommentRepository commentRepository;
 
     @Autowired
-    private BookRepository bookRepository;
+    private MongoOperations mongoOperations;
 
     private List<Comment> dbComments;
 
@@ -54,10 +54,9 @@ public class MongoCommentRepositoryTest {
     @DisplayName("Должен загружать комментарий по id")
     @Test
     void shouldReturnCorrectCommentById() {
-        var actualComment = commentRepository.findById(TEST_COMMENT_ID);
+        var actualComment = mongoOperations.findById(TEST_COMMENT_ID, Comment.class);
         var expectedComment = dbComments.get(0);
-        assertThat(actualComment).isPresent()
-                .get()
+        assertThat(actualComment)
                 .isEqualTo(expectedComment);
     }
 
@@ -71,22 +70,19 @@ public class MongoCommentRepositoryTest {
     @DisplayName("Должен удалять комментарий по id")
     @Test
     void shouldDeleteComment() {
-        assertThat(commentRepository.findById(DELETE_TEST_COMMENT_ID)).isPresent();
+        assertThat(mongoOperations.findById(DELETE_TEST_COMMENT_ID, Comment.class)).isNotNull();
         commentRepository.deleteById(DELETE_TEST_COMMENT_ID);
-        assertThat(commentRepository.findById(DELETE_TEST_COMMENT_ID)).isEmpty();
+        assertThat(mongoOperations.findById(DELETE_TEST_COMMENT_ID, Comment.class)).isNull();
     }
 
     @DisplayName("Должен сохранять новый комментарий")
     @Test
     void shouldSaveNewComment() {
-        var expectedBook = bookRepository
-                .findById(TEST_BOOK_ID)
-                .orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(TEST_BOOK_ID)));
+        var expectedBook = mongoOperations.findById(TEST_BOOK_ID, Book.class);
         var expectedComment = new Comment(TEST_NEW_COMMENT_ID, TEST_NEW_COMMENT_TEXT, expectedBook);
         commentRepository.save(expectedComment);
-        var newComment = commentRepository.findById(TEST_NEW_COMMENT_ID);
-        assertThat(newComment).isPresent()
-                .get()
+        var newComment = mongoOperations.findById(TEST_NEW_COMMENT_ID, Comment.class);
+        assertThat(newComment)
                 .isEqualTo(expectedComment);
     }
 
