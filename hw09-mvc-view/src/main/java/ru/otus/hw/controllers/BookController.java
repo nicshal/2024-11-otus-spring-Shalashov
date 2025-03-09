@@ -1,8 +1,8 @@
 package ru.otus.hw.controllers;
 
 import jakarta.validation.Valid;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.servlet.ModelAndView;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.GenreDto;
@@ -22,6 +23,7 @@ import ru.otus.hw.services.BookService;
 
 import java.util.List;
 
+@Log4j2
 @Controller
 public class BookController {
 
@@ -96,8 +98,11 @@ public class BookController {
         return "redirect:/books";
     }
 
-    @ExceptionHandler(value = EntityNotFoundException.class)
-    private ResponseEntity<String> handleNotFound(EntityNotFoundException ex) {
-        return ResponseEntity.badRequest().body("%s. Maybe book already was deleted".formatted(ex.getMessage()));
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ModelAndView handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.error(ex);
+        ModelAndView modelAndView = new ModelAndView("book-not-found");
+        modelAndView.addObject("error_message", ex.getMessage());
+        return modelAndView;
     }
 }
