@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book not found</title>
+</head>
+<body>
+<div>
+    <div class="book">
+        <h3 th:text="${error_message}"></h3>
+        <a th:href="@{/books}">Return to the book page</a>
+    </div>
+</div>
+</body>
+</html>
