@@ -102,7 +102,7 @@ public class BookController {
     public ModelAndView handleEntityNotFoundException(EntityNotFoundException ex) {
         log.error(ex);
         ModelAndView modelAndView = new ModelAndView("book-not-found");
-        modelAndView.addObject("error_message", ex.getMessage());
+        modelAndView.addObject("error_message", "Contact technical support");
         return modelAndView;
     }
 }
