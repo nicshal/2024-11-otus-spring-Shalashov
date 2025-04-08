@@ -29,7 +29,7 @@ public class IntegrationConfig {
     //Формируется окончательный чек, чеку присваивается идентификационный номер
     @Bean
     public IntegrationFlow checkFlow(CheckProcessingService checkProcessingService) {
-        return IntegrationFlow.from("inputChannel")
+        return IntegrationFlow.from(inputChannel())
                 .enrichHeaders(header -> header
                         .headerFunction("checkId", m -> ((Check) m.getPayload()).getId())
                 )
@@ -44,7 +44,7 @@ public class IntegrationConfig {
                 )
                 .handle(checkProcessingService, "processCheck")
                 .log()
-                .channel("outputChannel")
+                .channel(outputChannel())
                 .get();
     }
 }
