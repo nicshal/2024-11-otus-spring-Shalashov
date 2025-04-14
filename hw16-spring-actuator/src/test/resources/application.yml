@@ -13,14 +13,17 @@ spring:
     show-sql: true
 
 management:
-  endpoint:
-    health:
-      show-details: always
   endpoints:
+    enabled-by-default: false
     web:
       exposure:
-        include: "*"
+        include: health, logfile, metrics
       base-path: /monitor
-  health:
-    defaults:
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+    logfile:
+      enabled: true
+    metrics:
       enabled: true

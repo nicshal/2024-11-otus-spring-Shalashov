@@ -27,20 +27,19 @@ spring:
       base-path: book-data-rest
 
 management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: health, logfile, metrics
+      base-path: /monitor
   endpoint:
     health:
+      enabled: true
       show-details: always
     logfile:
       enabled: true
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-      base-path: /monitor
-  health:
-    diskspace:
-      enabled: true
-    defaults:
+    metrics:
       enabled: true
 
 logging:
