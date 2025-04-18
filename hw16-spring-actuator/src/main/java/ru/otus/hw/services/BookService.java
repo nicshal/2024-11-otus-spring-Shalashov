@@ -15,4 +15,6 @@ public interface BookService {
     Book update(long id, String title, long authorId, long genreId);
 
     void deleteById(long id);
+
+    long count();
 }

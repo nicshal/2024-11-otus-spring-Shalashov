@@ -17,7 +17,7 @@ public class BookCountIndicator implements HealthIndicator {
         try {
             return Health.up()
                     .withDetail("message", "book count = %d"
-                            .formatted(bookService.findAll().size()))
+                            .formatted(bookService.count()))
                     .build();
         } catch (Exception ex) {
             return Health.down()
