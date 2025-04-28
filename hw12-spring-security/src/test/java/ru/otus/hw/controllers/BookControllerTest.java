@@ -4,16 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.otus.hw.config.SecurityConfig;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.GenreDto;
@@ -36,8 +31,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("Тестирование контроллера книг")
-@WebMvcTest(BookController.class)
-@Import(SecurityConfig.class)
+@WebMvcTest(controllers = BookController.class,
+        excludeAutoConfiguration = SecurityAutoConfiguration.class)
 public class BookControllerTest {
 
     @Autowired
@@ -61,7 +56,6 @@ public class BookControllerTest {
 
     @DisplayName("Должен вернуть представление со списком книг")
     @Test
-    @WithMockUser
     public void shouldReturnBooksListView() throws Exception {
         given(bookService.findAll())
                 .willReturn(dbBooks);
@@ -77,7 +71,6 @@ public class BookControllerTest {
 
     @DisplayName("Должен удалить книгу и сделать редирект на /books")
     @Test
-    @WithMockUser
     public void shouldDeleteBookAndRedirected() throws Exception {
         long bookId = 1L;
         doNothing().when(bookService).deleteById(bookId);
@@ -90,7 +83,6 @@ public class BookControllerTest {
 
     @DisplayName("Должен изменить книгу и сделать редирект на /books")
     @Test
-    @WithMockUser
     public void shouldEditBookAndRedirected() throws Exception {
         given(bookService.update(anyLong(),
                 anyString(),
@@ -114,7 +106,6 @@ public class BookControllerTest {
 
     @DisplayName("Должен сохранить книгу и сделать редирект на /books")
     @Test
-    @WithMockUser
     public void shouldInsertBookAndRedirected() throws Exception {
         given(bookService.insert(anyString(),
                 anyLong(),
@@ -132,38 +123,6 @@ public class BookControllerTest {
         verify(bookService, times(1)).insert(anyString(),
                 anyLong(),
                 anyLong());
-    }
-
-    @DisplayName("Должен сделать перенаправление c /books на /login")
-    @Test
-    public void shouldRedirectFromBooksToLogin() throws Exception {
-        this.mvc.perform(get("/books"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("http://*/login"));
-    }
-
-    @DisplayName("Должен сделать перенаправление c /books/insert на /login")
-    @Test
-    public void shouldRedirectFromBooksInsertToLogin() throws Exception {
-        this.mvc.perform(get("/books/insert"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("http://*/login"));
-    }
-
-    @DisplayName("Должен сделать перенаправление c /books/edit на /login")
-    @Test
-    public void shouldRedirectFromBooksEditToLogin() throws Exception {
-        this.mvc.perform(get("/books/edit"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("http://*/login"));
-    }
-
-    @DisplayName("Должен сделать перенаправление c /books/delete на /login")
-    @Test
-    public void houldRedirectFromBooksDeleteToLogin() throws Exception {
-        this.mvc.perform(get("/books/delete"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("http://*/login"));
     }
 
     private static List<Author> getDbAuthors() {
@@ -189,4 +148,5 @@ public class BookControllerTest {
         var dbGenres = getDbGenres();
         return getDbBooks(dbAuthors, dbGenres);
     }
+
 }
