@@ -1,0 +1,103 @@
+server:
+  port: 8087
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:maindb
+  sql:
+    init:
+      mode: always
+      #data-locations: data.sql
+      #schema-locations: schema.sql
+  jpa:
+    open-in-view: false
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+  messages:
+    encoding: UTF-8
+
+  jmx:
+    enabled: true
+
+  data:
+    rest:
+      base-path: book-data-rest
+
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: health, logfile, metrics
+      base-path: /monitor
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+    logfile:
+      enabled: true
+    metrics:
+      enabled: true
+
+logging:
+  level:
+    ROOT: INFO
+  file:
+    name: "hw18-resilience4j-log"
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      registerHealthIndicator: true
+      slidingWindowSize: 100
+      permittedNumberOfCallsInHalfOpenState: 5
+      slowCallDurationThreshold: 2s
+      slowCallRateThreshold: 90
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10s
+      minimumNumberOfCalls: 50
+  instances:
+    authorService:
+      baseConfig: default
+      waitDurationInOpenState: 5s
+      failureRateThreshold: 20
+    bookService:
+      baseConfig: default
+      waitDurationInOpenState: 20s
+      failureRateThreshold: 60
+    commentService:
+      baseConfig: default
+      waitDurationInOpenState: 15s
+      failureRateThreshold: 40
+    genreService:
+      baseConfig: default
+      waitDurationInOpenState: 20s
+      failureRateThreshold: 60
+
+resilience4j.ratelimiter:
+  configs:
+    default:
+      timeoutDuration: 3s
+      limitForPeriod: 5
+      limitRefreshPeriod: 25s
+  instances:
+    authorService:
+      baseConfig: default
+      limitForPeriod: 50
+      limitRefreshPeriod: 1s
+    bookService:
+      baseConfig: default
+      timeoutDuration: 10ms
+      limitForPeriod: 5
+      limitRefreshPeriod: 10s
+    commentService:
+      baseConfig: default
+      limitForPeriod: 500
+      limitRefreshPeriod: 2s
+    genreService:
+      baseConfig: default
+      limitForPeriod: 100
+      limitRefreshPeriod: 3s
